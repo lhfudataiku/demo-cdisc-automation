@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CDISC Asset Readiness</title>
+<style>
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --surface-2: #eef1f4;
+  --ink: #18212b;
+  --muted: #5b6672;
+  --line: #d5dbe1;
+  --accent: #127a76;
+  --accent-soft: #e0f2f1;
+  --govern: #5b46b0;
+  --govern-soft: #ece8fb;
+  --manual: #8a6100;
+  --manual-soft: #fdf3dc;
+  --bad: #b42318;
+  --bad-soft: #fde8e6;
+  --warn: #9a5b00;
+  --warn-soft: #fff1d6;
+  --good: #1e7b34;
+  --good-soft: #e4f4e7;
+  --shadow: 0 1px 2px rgba(16, 24, 40, .06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11161c;
+    --surface: #181f27;
+    --surface-2: #212a34;
+    --ink: #e6ebf0;
+    --muted: #9aa6b2;
+    --line: #2f3a46;
+    --accent: #4fc7c1;
+    --accent-soft: #15302f;
+    --govern: #a99bf0;
+    --govern-soft: #241f3d;
+    --manual: #e9b54a;
+    --manual-soft: #33280f;
+    --bad: #f2877c;
+    --bad-soft: #3a1a17;
+    --warn: #f0b85a;
+    --warn-soft: #36290f;
+    --good: #6fcf86;
+    --good-soft: #15301c;
+    --shadow: none;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11161c;
+  --surface: #181f27;
+  --surface-2: #212a34;
+  --ink: #e6ebf0;
+  --muted: #9aa6b2;
+  --line: #2f3a46;
+  --accent: #4fc7c1;
+  --accent-soft: #15302f;
+  --govern: #a99bf0;
+  --govern-soft: #241f3d;
+  --manual: #e9b54a;
+  --manual-soft: #33280f;
+  --bad: #f2877c;
+  --bad-soft: #3a1a17;
+  --warn: #f0b85a;
+  --warn-soft: #36290f;
+  --good: #6fcf86;
+  --good-soft: #15301c;
+  --shadow: none;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+main { max-width: 1160px; margin: 0 auto; padding: 32px 16px 64px; }
+h1 { font-size: 28px; line-height: 1.2; margin: 0 0 6px; letter-spacing: -.01em; }
+h2 { font-size: 20px; margin: 48px 0 6px; letter-spacing: -.005em; }
+h3 { font-size: 16px; margin: 24px 0 8px; }
+p { margin: 0 0 12px; }
+.lede { color: var(--muted); max-width: 760px; }
+.section-intro { color: var(--muted); margin-bottom: 16px; max-width: 820px; }
+code { font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+a { color: var(--accent); }
+
+nav.toc { display: flex; flex-wrap: wrap; gap: 6px; margin: 20px 0 0; }
+nav.toc a { font-size: 13px; text-decoration: none; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink); background: var(--surface); }
+nav.toc a:hover { border-color: var(--accent); }
+
+.meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; padding: 3px 10px; border-radius: 999px; border: 1px solid transparent; }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.good { background: var(--good-soft); color: var(--good); }
+.pill.neutral { background: var(--surface-2); color: var(--muted); }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; box-shadow: var(--shadow); }
+.grid { display: grid; gap: 12px; }
+.kpis { grid-template-columns: repeat(3, 1fr); margin-top: 20px; }
+@media (max-width: 640px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+.kpi .v { font-size: 26px; font-weight: 700; line-height: 1.1; }
+.kpi .l { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.kpi.bad .v { color: var(--bad); }
+.two { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+
+.summary ul { margin: 0; padding-left: 18px; }
+.summary li { margin: 4px 0; }
+
+.scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.scroll svg { display: block; min-width: 900px; width: 100%; height: auto; }
+svg text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .lane-dss { fill: var(--accent-soft); stroke: none; }
+svg .lane-side { fill: var(--manual-soft); stroke: none; }
+svg .lane-gov { fill: var(--govern-soft); stroke: none; }
+svg .lane-label { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+svg .lane-label.dss { fill: var(--accent); }
+svg .lane-label.side { fill: var(--manual); }
+svg .lane-label.gov { fill: var(--govern); }
+svg .box { fill: var(--surface); stroke: var(--line); stroke-width: 1.2; }
+svg .box.gated { stroke: var(--accent); stroke-width: 2; }
+svg .box.gov { stroke: var(--govern); stroke-width: 1.6; }
+svg .box.manual { stroke: var(--manual); stroke-width: 1.6; stroke-dasharray: 5 3; }
+svg .box.risk { stroke: var(--bad); stroke-width: 1.6; stroke-dasharray: 5 3; }
+svg .t { font-size: 13px; font-weight: 700; }
+svg .s { font-size: 11.5px; fill: var(--muted); }
+svg .flow { stroke: var(--muted); stroke-width: 1.6; fill: none; }
+svg .cross { stroke: var(--govern); stroke-width: 1.6; fill: none; stroke-dasharray: 6 4; }
+svg .riskline { stroke: var(--bad); stroke-width: 1.4; fill: none; stroke-dasharray: 4 4; }
+svg .ahead { fill: var(--muted); }
+svg .ahead-gov { fill: var(--govern); }
+svg .ahead-bad { fill: var(--bad); }
+svg .step circle { fill: var(--govern); }
+svg .step text { fill: #fff; font-size: 11px; font-weight: 700; }
+svg .badge circle { fill: var(--bad); }
+svg .badge text { fill: #fff; font-size: 10px; font-weight: 700; }
+
+ol.legend { margin: 12px 0 0; padding-left: 0; list-style: none; display: grid; gap: 6px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+ol.legend li { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; }
+.num { flex: 0 0 auto; width: 20px; height: 20px; border-radius: 50%; background: var(--govern); color: #fff; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; margin-top: 1px; }
+.num.bad { background: var(--bad); width: auto; padding: 0 6px; border-radius: 999px; }
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 10px; border-bottom: 1px solid var(--line); }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); background: var(--surface-2); position: sticky; top: 0; }
+tbody tr:last-child td { border-bottom: 0; }
+td.id { font-weight: 700; white-space: nowrap; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.table-wrap table { min-width: 720px; }
+
+.sev { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.sev.high { background: var(--bad-soft); color: var(--bad); }
+.sev.med { background: var(--warn-soft); color: var(--warn); }
+.sev.low { background: var(--surface-2); color: var(--muted); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+.chip { font: inherit; font-size: 13px; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.count { color: var(--muted); font-size: 13px; margin-left: 4px; }
+
+.scope { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.scope ul { margin: 0; padding-left: 18px; }
+.scope h3 { margin-top: 0; }
+.in h3 { color: var(--good); }
+.out h3 { color: var(--muted); }
+
+.phase { border-left: 4px solid var(--accent); }
+.phase.p0 { border-left-color: var(--muted); }
+.phase.p2 { border-left-color: var(--govern); }
+.phase.p3 { border-left-color: var(--line); }
+.phase header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 12px; margin-bottom: 10px; }
+.phase header h3 { margin: 0; }
+.phase .effort { font-size: 13px; color: var(--muted); }
+.phase table { font-size: 13.5px; }
+.phases { display: grid; gap: 14px; }
+
+.score td:first-child { width: 42%; }
+.rag { font-weight: 700; white-space: nowrap; }
+.rag.r { color: var(--bad); }
+.rag.a { color: var(--warn); }
+.rag.g { color: var(--good); }
+
+ul.check { list-style: none; padding: 0; margin: 0; }
+ul.check li { padding: 6px 0 6px 28px; position: relative; border-bottom: 1px solid var(--line); }
+ul.check li:last-child { border-bottom: 0; }
+ul.check li::before { content: ""; position: absolute; left: 4px; top: 10px; width: 14px; height: 14px; border: 2px solid var(--muted); border-radius: 3px; }
+
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; font-size: 14px; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; }
+
+footer { margin-top: 56px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); padding-top: 16px; }
+
+@media (max-width: 600px) {
+  h1 { font-size: 23px; }
+  main { padding-top: 20px; }
+  .kv { grid-template-columns: 1fr; }
+  .kv dt { margin-top: 6px; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <h1>CDISC Asset Readiness</h1>
+  <p class="lede">Current architecture, gaps, assumptions and the work needed to package <code>CLIN_FLU2026_VISUAL</code> as a demo asset, within the re-baselined scope: governed SDTM-validated → ADaM → TLF/XPT.</p>
+  <div class="meta">
+    <span class="pill bad">Not package-ready</span>
+    <span class="pill neutral">Scope re-baselined</span>
+    <span class="pill neutral">Reviewed 2026-11-05</span>
+    <span class="pill neutral">Design node + Govern node</span>
+  </div>
+  <nav class="toc" aria-label="Sections">
+    <a href="#status">Status</a>
+    <a href="#scope">Scope</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#governance">Governance</a>
+    <a href="#gaps">Gaps</a>
+    <a href="#assumptions">Assumptions</a>
+    <a href="#work">Suggested work</a>
+    <a href="#ready">Package-ready criteria</a>
+  </nav>
+</header>
+
+<!-- ============================ STATUS ============================ -->
+<section id="status">
+  <h2>Current status</h2>
+  <p class="section-intro">The project and the Govern record are unchanged since the 21 October review: the only new activity is temporary worksheets created and deleted on the Design node. The pipeline runs end to end. The issues are in what the gates actually enforce, how portable the governance setup is, and claims that don't match the evidence.</p>
+
+  <div class="grid kpis">
+    <div class="card kpi"><div class="v">5</div><div class="l">ADaM datasets, 3 with no code</div></div>
+    <div class="card kpi"><div class="v">17 / 24</div><div class="l">Recipes that are visual</div></div>
+    <div class="card kpi"><div class="v">2</div><div class="l">Govern sign-off gates, plus automatic revocation on drift</div></div>
+    <div class="card kpi bad"><div class="v">6,047 → PASS</div><div class="l">CORE findings vs. SDTM gate result</div></div>
+    <div class="card kpi bad"><div class="v">11</div><div class="l">High-severity gaps out of 24</div></div>
+    <div class="card kpi"><div class="v">≈ 2–3 wks</div><div class="l">To package-ready (phases 0–2, rough estimate)</div></div>
+  </div>
+
+  <div class="grid two" style="margin-top:12px">
+    <div class="card summary">
+      <h3 style="margin-top:0">What works</h3>
+      <ul>
+        <li>7-step app homepage drives the full flow; the last successful end-to-end run was in the <code>dUOrLYMV</code> instance (2026-07-28).</li>
+        <li>Visual-first ADaM with <code>admiral</code> only for baseline logic; <code>xportr</code> XPT v5 export; CDISC CORE 0.16.0 conformance.</li>
+        <li>Gates read Govern sign-offs through the built-in DSS↔Govern connection and abort builds that aren't approved.</li>
+        <li>Data and code fingerprints revoke every approval when anything changes, which is the strongest demo moment.</li>
+      </ul>
+    </div>
+    <div class="card summary">
+      <h3 style="margin-top:0">What blocks packaging</h3>
+      <ul>
+        <li>The SDTM gate can't fail, and the Pinnacle 21 step can be skipped.</li>
+        <li>Every app instance writes to the same Govern record <code>ar.114</code>; Govern links are hard-coded.</li>
+        <li>The Govern setup isn't portable: shared blueprint, named-user and API-key approvers, no admin key to export it.</li>
+        <li>The R environment isn't pinned; scenarios run as a former owner's personal account.</li>
+        <li>The deck and scoping document still claim the original scope and "Part 11 e-signatures".</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ SCOPE ============================ -->
+<section id="scope">
+  <h2>Re-baselined scope</h2>
+  <p class="section-intro">Agreed on 2026-11-05: the asset stays within what the project delivers today. Everything else from the original scoping document becomes roadmap and discovery material.</p>
+  <div class="scope">
+    <div class="card in">
+      <h3>In scope (the asset)</h3>
+      <ul>
+        <li>SDTM lock and validation: XPT v5 export, CDISC CORE (SDTMIG 3.4), fingerprints</li>
+        <li>SDTM sign-off in Govern</li>
+        <li>ADaM derivation: ADSL, ADAE, ADREACT, ADVS, ADIS, plus 26 QC checks</li>
+        <li>ADaM XPT v5 export and Pinnacle 21 review (manual)</li>
+        <li>ADaM sign-off in Govern</li>
+        <li>Gated release of the XPT and TLF packages (4 summary tables)</li>
+        <li>Automatic revocation of approvals on data or code drift</li>
+      </ul>
+    </div>
+    <div class="card out">
+      <h3>Roadmap (from the original scoping document)</h3>
+      <ul>
+        <li>Raw → SDTM mapping and the raw→SDTM sign-off gate</li>
+        <li>EDC/API ingestion</li>
+        <li>Metadata-driven Global Standards Library</li>
+        <li>Define-XML 2.1</li>
+        <li>Visual-vs-code independent validation path</li>
+        <li>Medical review dashboards</li>
+        <li>QMS integration of Govern audit metadata</li>
+        <li>Part 11 e-signature integration; Pinnacle 21 Enterprise; full TLF suite; multi-study operation</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ ARCHITECTURE ============================ -->
+<section id="architecture">
+  <h2>Current architecture</h2>
+  <p class="section-intro">Three lanes: the Dataiku Design node (Cloud, used for development), steps that happen outside the gated path, and the Govern node. Purple numbers trace the governance handshake; red badges point to the gaps listed below.</p>
+
+  <div class="scroll" role="img" aria-label="Architecture diagram of the Dataiku project, side paths and the Govern record">
+  <svg viewBox="0 0 1120 610" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker>
+      <marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead-gov"/></marker>
+      <marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ahead-bad"/></marker>
+    </defs>
+
+    <!-- lanes -->
+    <rect class="lane-dss" x="10" y="10" width="1100" height="250" rx="10"/>
+    <text class="lane-label dss" x="26" y="34">Dataiku Design node · CLIN_FLU2026_VISUAL (Cloud, development)</text>
+    <rect class="lane-side" x="10" y="272" width="1100" height="104" rx="10"/>
+    <text class="lane-label side" x="26" y="296">Outside the gated path</text>
+    <rect class="lane-gov" x="10" y="388" width="1100" height="212" rx="10"/>
+    <text class="lane-label gov" x="26" y="412">Govern node · record ar.114 · blueprint Asset Inventory / bv.adam_validation_2</text>
+
+    <!-- DSS boxes -->
+    <rect class="box" x="30" y="58" width="150" height="160" rx="8"/>
+    <text class="t" x="44" y="82">SDTM inputs</text>
+    <text class="s" x="44" y="104">6 domains</text>
+    <text class="s" x="44" y="122">DM EX AE VS LB QS</text>
+    <text class="s" x="44" y="140">Uploaded files</text>
+    <text class="s" x="44" y="158">synthetic, 50 subjects</text>
+
+    <rect class="box" x="210" y="58" width="200" height="160" rx="8"/>
+    <text class="t" x="224" y="82">build_sdtm</text>
+    <text class="s" x="224" y="104">SDTM → XPT v5</text>
+    <text class="s" x="224" y="122">CDISC CORE · SDTMIG 3.4</text>
+    <text class="s" x="224" y="140">env cdisc_core (pinned)</text>
+    <text class="s" x="224" y="158">data + code fingerprint</text>
+    <text class="s" x="224" y="176">→ conformance PASS/FAIL</text>
+
+    <rect class="box gated" x="440" y="58" width="240" height="160" rx="8"/>
+    <text class="t" x="454" y="82">build_adam · gated</text>
+    <text class="s" x="454" y="104">ADSL · ADAE · ADREACT (visual)</text>
+    <text class="s" x="454" y="122">ADVS · ADIS (visual + admiral)</text>
+    <text class="s" x="454" y="140">26 QC checks (ADAM_VALIDATION)</text>
+    <text class="s" x="454" y="158">ADaM XPT v5 · 4 TLF tables</text>
+    <text class="s" x="454" y="176">env cdisc_adam_r (unpinned)</text>
+
+    <rect class="box gated" x="710" y="58" width="180" height="160" rx="8"/>
+    <text class="t" x="724" y="82">release_submission</text>
+    <text class="s" x="724" y="100">gated</text>
+    <text class="s" x="724" y="122">both sign-offs approved</text>
+    <text class="s" x="724" y="140">ADaM result PASS</text>
+    <text class="s" x="724" y="158">fingerprints unchanged</text>
+    <text class="s" x="724" y="176">→ bundles TLF zip</text>
+
+    <rect class="box" x="920" y="58" width="175" height="160" rx="8"/>
+    <text class="t" x="934" y="82">Outputs</text>
+    <text class="s" x="934" y="104">SDTM_XPT</text>
+    <text class="s" x="934" y="122">SDTM_REPORT (xlsx, json)</text>
+    <text class="s" x="934" y="140">SUBMISSION_XPT</text>
+    <text class="s" x="934" y="158">+ static P21 zip</text>
+    <text class="s" x="934" y="176">TLF_OUTPUT + zip</text>
+
+    <path class="flow" d="M180,138 H208" marker-end="url(#ar)"/>
+    <path class="flow" d="M410,138 H438" marker-end="url(#ar)"/>
+    <path class="flow" d="M680,138 H708" marker-end="url(#ar)"/>
+    <path class="flow" d="M890,138 H918" marker-end="url(#ar)"/>
+
+    <!-- side path boxes -->
+    <rect class="box risk" x="30" y="306" width="190" height="56" rx="8"/>
+    <text class="t" x="44" y="328">debug_reset_signoffs</text>
+    <text class="s" x="44" y="348">button on app homepage</text>
+
+    <rect class="box manual" x="560" y="306" width="160" height="56" rx="8"/>
+    <text class="t" x="574" y="328">Pinnacle 21</text>
+    <text class="s" x="574" y="348">Community · manual</text>
+
+    <rect class="box risk" x="930" y="306" width="170" height="56" rx="8"/>
+    <text class="t" x="944" y="328">Integrity sweep</text>
+    <text class="s" x="944" y="348">hourly trigger · inactive</text>
+
+    <!-- Govern boxes -->
+    <rect class="box gov" x="210" y="430" width="250" height="118" rx="8"/>
+    <text class="t" x="224" y="454">1 · SDTM Validation</text>
+    <text class="s" x="224" y="476">sign-off: "Lead Statistician"</text>
+    <text class="s" x="224" y="494">CORE result · findings summary</text>
+    <text class="s" x="224" y="512">data|code fingerprint</text>
+    <text class="s" x="224" y="530">status: APPROVED</text>
+
+    <rect class="box gov" x="520" y="430" width="250" height="118" rx="8"/>
+    <text class="t" x="534" y="454">2 · ADaM Validation</text>
+    <text class="s" x="534" y="476">sign-off: "Lead Statistician"</text>
+    <text class="s" x="534" y="494">ADaM fingerprint</text>
+    <text class="s" x="534" y="512">ADaM conformance result</text>
+    <text class="s" x="534" y="530">status: APPROVED</text>
+
+    <rect class="box gov" x="830" y="430" width="200" height="118" rx="8"/>
+    <text class="t" x="844" y="454">3 · ADaM Validated</text>
+    <text class="s" x="844" y="476">terminal step</text>
+    <text class="s" x="844" y="494">signoff_status</text>
+    <text class="s" x="844" y="512">= VALIDATED</text>
+    <text class="s" x="844" y="530">(current state)</text>
+
+    <path class="flow" d="M460,489 H518" marker-end="url(#ar)"/>
+    <path class="flow" d="M770,489 H828" marker-end="url(#ar)"/>
+
+    <text class="s" x="224" y="580">Approvers: administrators group (incl. 4 API keys) + named users · Attachments: ADRG, SDRG, SAP (drafts)</text>
+
+    <!-- cross-lane handshake -->
+    <path class="cross" d="M300,218 V428" marker-end="url(#arg)"/>
+    <path class="cross" d="M420,428 L490,220" marker-end="url(#arg)"/>
+    <path class="cross" d="M530,218 L548,428" marker-end="url(#arg)"/>
+    <path class="cross" d="M640,362 V428" marker-end="url(#arg)"/>
+    <path class="cross" d="M640,220 V304" marker-end="url(#arg)"/>
+    <path class="cross" d="M740,428 L770,220" marker-end="url(#arg)"/>
+    <path class="cross" d="M850,218 L905,428" marker-end="url(#arg)"/>
+
+    <!-- risk lines -->
+    <path class="riskline" d="M125,362 L230,470" marker-end="url(#arb)"/>
+    <path class="riskline" d="M1010,362 L995,428" marker-end="url(#arb)"/>
+
+    <!-- step numbers -->
+    <g class="step"><circle cx="300" cy="300" r="10"/><text x="300" y="304" text-anchor="middle">1</text></g>
+    <g class="step"><circle cx="455" cy="325" r="10"/><text x="455" y="329" text-anchor="middle">2</text></g>
+    <g class="step"><circle cx="539" cy="380" r="10"/><text x="539" y="384" text-anchor="middle">3</text></g>
+    <g class="step"><circle cx="655" cy="262" r="10"/><text x="655" y="266" text-anchor="middle">4</text></g>
+    <g class="step"><circle cx="655" cy="396" r="10"/><text x="655" y="400" text-anchor="middle">5</text></g>
+    <g class="step"><circle cx="756" cy="325" r="10"/><text x="756" y="329" text-anchor="middle">6</text></g>
+    <g class="step"><circle cx="877" cy="325" r="10"/><text x="877" y="329" text-anchor="middle">7</text></g>
+
+    <!-- gap badges -->
+    <g class="badge"><circle cx="400" cy="66" r="11"/><text x="400" y="70" text-anchor="middle">K1</text></g>
+    <g class="badge"><circle cx="670" cy="66" r="12"/><text x="670" y="70" text-anchor="middle">K10</text></g>
+    <g class="badge"><circle cx="880" cy="66" r="11"/><text x="880" y="70" text-anchor="middle">K3</text></g>
+    <g class="badge"><circle cx="1085" cy="66" r="11"/><text x="1085" y="70" text-anchor="middle">K2</text></g>
+    <g class="badge"><circle cx="210" cy="306" r="11"/><text x="210" y="310" text-anchor="middle">K7</text></g>
+    <g class="badge"><circle cx="1085" cy="306" r="11"/><text x="1085" y="310" text-anchor="middle">K9</text></g>
+    <g class="badge"><circle cx="450" cy="438" r="11"/><text x="450" y="442" text-anchor="middle">K5</text></g>
+    <g class="badge"><circle cx="760" cy="438" r="11"/><text x="760" y="442" text-anchor="middle">K6</text></g>
+    <g class="badge"><circle cx="1090" cy="404" r="12"/><text x="1090" y="408" text-anchor="middle">K4</text></g>
+  </svg>
+  </div>
+
+  <ol class="legend">
+    <li><span class="num">1</span><span><code>build_sdtm</code> writes the CORE result and fingerprints to Govern and opens the SDTM sign-off.</span></li>
+    <li><span class="num">2</span><span>The <code>build_adam</code> gate reads the SDTM approval and compares fingerprints; on drift it revokes every sign-off.</span></li>
+    <li><span class="num">3</span><span><code>build_adam</code> records the ADaM fingerprint, advances the workflow and opens the ADaM sign-off.</span></li>
+    <li><span class="num">4</span><span>The presenter downloads the XPT files and runs Pinnacle 21 on a laptop.</span></li>
+    <li><span class="num">5</span><span>The Pinnacle 21 result is entered on the Govern record by hand (no report is attached).</span></li>
+    <li><span class="num">6</span><span>The <code>release_submission</code> gate reads both approvals and the ADaM result.</span></li>
+    <li><span class="num">7</span><span>The finalize step marks the record VALIDATED and moves it to ADaM Validated.</span></li>
+    <li><span class="num bad">K#</span><span>Gap reference in the table below. Red dashed boxes are side paths that can change approvals: the homepage debug reset and the <code>governance_integrity_check</code> sweep.</span></li>
+  </ol>
+
+  <h3>Component inventory</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Component</th><th>Current state</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Flow</td><td>27 datasets · 24 recipes (17 visual, 5 R, 2 Python) · 6 managed folders · 9 flow zones</td><td>SDTM inputs are uploaded files; <code>SDTM_VALIDATION</code> is on Cloud-managed S3.</td></tr>
+        <tr><td>Scenarios</td><td><code>build_sdtm</code>, <code>build_adam</code>, <code>release_submission</code>, <code>governance_integrity_check</code>, <code>debug_reset_signoffs</code> + 3 deprecated</td><td>All run as <code>pierre.portal@dataiku.com</code>. <code>build_adam</code> keeps going after a failed build.</td></tr>
+        <tr><td>App</td><td>Template "FLU2026 — CDISC Submission Validation"; 7 operator sections + 1 debug section</td><td>5 instances exist (<code>A</code>, <code>FLU</code>, <code>FLU2</code>, <code>VN24Q9hU</code>, <code>dUOrLYMV</code>); the template default is <code>ar.114</code>, confirmed in <code>dUOrLYMV</code>.</td></tr>
+        <tr><td>Code environments</td><td><code>cdisc_core</code> (Python 3.12, pinned) · <code>cdisc_adam_r</code> (R, unpinned)</td><td>R packages: admiral, xportr, haven, rtables, tern, dplyr, tidyr, from public CRAN.</td></tr>
+        <tr><td>Project Git</td><td>Commit mode <code>AUTO</code></td><td>Commit messages are auto-generated.</td></tr>
+        <tr><td>Documentation</td><td>3 wiki articles · <code>docs/00–05</code> in this repository</td><td>Wiki article 3 describes the wrong approver groups.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================ GOVERNANCE ============================ -->
+<section id="governance">
+  <h2>Governance architecture</h2>
+  <p class="section-intro">The governance layer is the asset's differentiator, and also the least portable part. Govern isn't an electronic-signature system (Dataiku <em>Statement of Quality</em>, July 2026): its sign-offs are governance approvals that a customer's Part 11 e-signature system can be linked to.</p>
+
+  <div class="grid two">
+    <div class="card">
+      <h3 style="margin-top:0">Record ar.114 today</h3>
+      <dl class="kv">
+        <dt>Blueprint</dt><dd>Asset Inventory (<code>bp.asset_inventory</code>), version <code>bv.adam_validation_2</code>; shared with AI-governance records and 11 mock study records</dd>
+        <dt>Workflow</dt><dd>SDTM Validation → ADaM Validation → ADaM Validated (current step)</dd>
+        <dt>Sign-offs</dt><dd>Both APPROVED by the same person on 2026-07-28 (13:35 and 13:39 UTC), empty comments, no reviewer feedback</dd>
+        <dt>Approvers</dt><dd><code>administrators</code> group, including 4 global API keys, plus named users</dd>
+        <dt>Key fields</dt><dd>SDTM and ADaM results, data|code fingerprint, ADaM fingerprint, code versions, findings summaries, status</dd>
+        <dt>Links</dt><dd>Govern project record, SDTM/ADaM validation records, 6 SDTM and 5 ADaM dataset records</dd>
+        <dt>Attachments</dt><dd>ADRG, SDRG, SAP (synthetic drafts)</dd>
+        <dt>Hook</dt><dd>"CDISC validation integrity" per the wiki; <strong>not verifiable</strong> with the current non-admin API key</dd>
+      </dl>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Target for a packaged asset</h3>
+      <dl class="kv">
+        <dt>Blueprint</dt><dd>Dedicated "CDISC Study Validation" blueprint, exported and imported as one unit</dd>
+        <dt>Records</dt><dd>One per study or app instance; ID set in project variable <code>govern_artifact_id</code></dd>
+        <dt>Approvers</dt><dd>Assigned through Govern roles (Reviewer, Final approver); no API keys; reviewer ≠ approver</dd>
+        <dt>Approval</dt><dd>Comment required; the Pinnacle 21 report is attached before the ADaM sign-off</dd>
+        <dt>Run-as</dt><dd>Dedicated service account for the gate scenarios</dd>
+        <dt>Signatures</dt><dd>Customer e-signature system linked through the Govern REST API (roadmap)</dd>
+        <dt>Audit</dt><dd>Govern and DSS audit events forwarded to customer long-term storage</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ GAPS ============================ -->
+<section id="gaps">
+  <h2>Gaps</h2>
+  <p class="section-intro">IDs K1–K21 match <code>docs/05-mvp-backlog-internal.md</code>; K22–K24 are new in this review. All were re-checked against the live project and Govern on 2026-11-05.</p>
+
+  <div class="chips" role="group" aria-label="Filter gaps by area" data-target="gap-table">
+    <button class="chip" aria-pressed="true" data-filter="all">All<span class="count"></span></button>
+    <button class="chip" aria-pressed="false" data-filter="gate">Gate logic</button>
+    <button class="chip" aria-pressed="false" data-filter="gov">Governance</button>
+    <button class="chip" aria-pressed="false" data-filter="out">Outputs</button>
+    <button class="chip" aria-pressed="false" data-filter="repro">Reproducibility</button>
+    <button class="chip" aria-pressed="false" data-filter="pkg">Packaging</button>
+    <button class="chip" aria-pressed="false" data-filter="doc">Documentation</button>
+  </div>
+
+  <div class="table-wrap">
+    <table id="gap-table">
+      <thead><tr><th>ID</th><th>Gap</th><th>Evidence</th><th>Severity</th><th>Fixed by</th></tr></thead>
+      <tbody>
+        <tr data-area="gate"><td class="id">K1</td><td>SDTM gate can never fail</td><td>The gate reads CORE's <code>severity</code> column, which holds rule <em>executability</em>; 6,047 findings counted as 0 errors → PASS.</td><td><span class="sev high">High</span></td><td>W3</td></tr>
+        <tr data-area="out"><td class="id">K2</td><td>Stale Pinnacle 21 package</td><td>Nothing builds <code>p21_submission_package.zip</code>; template copy is dated 2026-06-18.</td><td><span class="sev high">High</span></td><td>W4</td></tr>
+        <tr data-area="gate"><td class="id">K3</td><td>Pinnacle 21 step can be skipped</td><td>Release gate fills a blank ADaM result with the in-flow QC result; no P21 report stored.</td><td><span class="sev high">High</span></td><td>W5</td></tr>
+        <tr data-area="pkg"><td class="id">K4</td><td>All instances share one Govern record</td><td>Every instance has <code>govern_artifact_id = ar.114</code>; homepage links hard-code <code>ar.114</code>.</td><td><span class="sev high">High</span></td><td>W12</td></tr>
+        <tr data-area="gov"><td class="id">K5</td><td>API keys can approve sign-offs</td><td>4 global API keys are approvers through the <code>administrators</code> group.</td><td><span class="sev high">High</span></td><td>W6</td></tr>
+        <tr data-area="gov"><td class="id">K6</td><td>Self-approval, no feedback, no comments</td><td>Same person reviewed and approved both steps; empty comments.</td><td><span class="sev med">Medium</span></td><td>W6</td></tr>
+        <tr data-area="gov"><td class="id">K7</td><td>"Reset all sign-offs" on the operator homepage</td><td>Debug section runs <code>debug_reset_signoffs</code>.</td><td><span class="sev high">High</span></td><td>W7</td></tr>
+        <tr data-area="pkg"><td class="id">K8</td><td>Gate-bypassing scenarios still shipped</td><td><code>run_full_chain</code>, <code>run_full_chain_1</code>, <code>AAA</code>.</td><td><span class="sev med">Medium</span></td><td>W7</td></tr>
+        <tr data-area="gate"><td class="id">K9</td><td>Integrity sweep inactive</td><td><code>governance_integrity_check</code> has an hourly trigger but is inactive.</td><td><span class="sev low">Low</span></td><td>W7</td></tr>
+        <tr data-area="gate"><td class="id">K10</td><td>ADaM build continues after a failure</td><td><code>proceedOnFailure: true</code> on the build step.</td><td><span class="sev med">Medium</span></td><td>W7</td></tr>
+        <tr data-area="repro"><td class="id">K11</td><td>R packages unpinned</td><td><code>cdisc_adam_r</code> lists packages without versions, from public CRAN.</td><td><span class="sev high">High</span></td><td>W9</td></tr>
+        <tr data-area="out"><td class="id">K12</td><td>XPT labels equal variable names</td><td><code>xpt_export</code>: <code>label = substr(names(df), 1, 40)</code>, strict checks off.</td><td><span class="sev med">Medium</span></td><td>W17</td></tr>
+        <tr data-area="out"><td class="id">K13</td><td>TLFs don't match the SAP</td><td>Numbering differs (e.g. SAP 14.2.1 = reactogenicity, flow = immunogenicity); 2 tables and 2 listings missing.</td><td><span class="sev med">Medium</span></td><td>W8, W18</td></tr>
+        <tr data-area="doc"><td class="id">K14</td><td>Reviewer guides don't match the flow</td><td>ADRG/SDRG list an SV domain and an ADENDPOINT dataset that don't exist.</td><td><span class="sev med">Medium</span></td><td>W8</td></tr>
+        <tr data-area="doc"><td class="id">K15</td><td>Contradictory change note in Govern</td><td>Says EPOCH was fixed; 3,957 missing-EPOCH findings remain.</td><td><span class="sev low">Low</span></td><td>W8</td></tr>
+        <tr data-area="doc"><td class="id">K16</td><td>Wiki out of date</td><td>Article 3 names <code>designers</code> / <code>space_administrators</code> as approvers.</td><td><span class="sev low">Low</span></td><td>W16</td></tr>
+        <tr data-area="pkg"><td class="id">K17</td><td>CDISC workflow inside a shared blueprint</td><td><code>bv.adam_validation_2</code> belongs to <code>bp.asset_inventory</code>.</td><td><span class="sev high">High</span></td><td>W11</td></tr>
+        <tr data-area="pkg"><td class="id">K18</td><td>Approvers are named users, not roles</td><td>Lost when the blueprint is exported and imported.</td><td><span class="sev high">High</span></td><td>W6, W11</td></tr>
+        <tr data-area="gov"><td class="id">K19</td><td>Commit messages auto-generated</td><td>Project <code>gitCommitMode = AUTO</code>; scoping doc says "already the case".</td><td><span class="sev low">Low</span></td><td>W14</td></tr>
+        <tr data-area="doc"><td class="id">K20</td><td>Reference project missing</td><td>Description cites <code>CLIN_FLU2026_NATIVE</code>, which isn't on the instance.</td><td><span class="sev low">Low</span></td><td>W16</td></tr>
+        <tr data-area="repro"><td class="id">K21</td><td>Fingerprint loads full datasets into memory</td><td><code>_fingerprint()</code> uses <code>get_dataframe()</code>.</td><td><span class="sev low">Low</span></td><td>Document</td></tr>
+        <tr data-area="gov"><td class="id">K22</td><td>Gates run as a former owner's personal account</td><td>All scenarios run as <code>pierre.portal@dataiku.com</code>; gates need admin rights for Govern.</td><td><span class="sev med">Medium</span></td><td>W13</td></tr>
+        <tr data-area="pkg"><td class="id">K23</td><td>No Govern admin access</td><td>Current API key can't read the blueprint version, sign-off configs, roles or hooks, so it can't export them.</td><td><span class="sev high">High</span></td><td>W1</td></tr>
+        <tr data-area="doc"><td class="id">K24</td><td>Deck and scoping doc describe the original scope</td><td>Raw→SDTM, Define-XML, dual path, dashboards, QMS, "Part 11 e-signatures", "100% GxP".</td><td><span class="sev high">High</span></td><td>W2</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================ ASSUMPTIONS ============================ -->
+<section id="assumptions">
+  <h2>Assumptions</h2>
+  <p class="section-intro">Assumptions built into the project, and assumptions made in this documentation. Each one is either accepted (and stated in the docs), wrong (and becomes a gap), or to be confirmed.</p>
+
+  <div class="chips" role="group" aria-label="Filter assumptions by status" data-target="assumption-table">
+    <button class="chip" aria-pressed="true" data-filter="all">All<span class="count"></span></button>
+    <button class="chip" aria-pressed="false" data-filter="accept">Accepted</button>
+    <button class="chip" aria-pressed="false" data-filter="wrong">Wrong</button>
+    <button class="chip" aria-pressed="false" data-filter="confirm">To confirm</button>
+  </div>
+
+  <div class="table-wrap">
+    <table id="assumption-table">
+      <thead><tr><th>ID</th><th>Assumption</th><th>Source</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr data-area="accept"><td class="id">A1</td><td>SDTM arrives clean and mapped from an upstream system</td><td>Project</td><td><span class="sev low">Accepted</span></td><td>State it; part of the re-baseline</td></tr>
+        <tr data-area="accept"><td class="id">A2</td><td>One synthetic study: single arm, 50 subjects, no blinding</td><td>Project</td><td><span class="sev low">Accepted</span></td><td>State it; real trials compare arms</td></tr>
+        <tr data-area="wrong"><td class="id">A3</td><td>CORE's <code>severity</code> column holds issue severity</td><td>Project</td><td><span class="sev high">Wrong</span></td><td>K1 → W3</td></tr>
+        <tr data-area="wrong"><td class="id">A4</td><td>26 in-flow QC checks can stand in for Pinnacle 21</td><td>Project</td><td><span class="sev high">Wrong</span></td><td>K3 → W5</td></tr>
+        <tr data-area="accept"><td class="id">A5</td><td>ADaM needs no separate binding because it's rebuilt from SDTM and code; released files aren't fingerprinted</td><td>Project</td><td><span class="sev low">Accepted</span></td><td>State it; fingerprint released zips later</td></tr>
+        <tr data-area="confirm"><td class="id">A6</td><td>Statisticians can review visual recipes</td><td>Project</td><td><span class="sev med">To confirm</span></td><td>Discovery question</td></tr>
+        <tr data-area="confirm"><td class="id">A7</td><td>Customer QA accepts pharmaverse open-source packages</td><td>Project</td><td><span class="sev med">To confirm</span></td><td>Discovery question</td></tr>
+        <tr data-area="wrong"><td class="id">A8</td><td>Each instance gets its own Govern record</td><td>Project</td><td><span class="sev high">Wrong</span></td><td>K4 → W12</td></tr>
+        <tr data-area="accept"><td class="id">A9</td><td>Small data volumes</td><td>Project</td><td><span class="sev low">Accepted</span></td><td>State it (K21)</td></tr>
+        <tr data-area="accept"><td class="id">A10</td><td>US FDA focus; PMDA specifics not covered</td><td>Project</td><td><span class="sev low">Accepted</span></td><td>State it</td></tr>
+        <tr data-area="accept"><td class="id">A11</td><td>The customer provides the Part 11 e-signature system</td><td>Docs</td><td><span class="sev low">Accepted</span></td><td>Matches the Statement of Quality</td></tr>
+        <tr data-area="confirm"><td class="id">A12</td><td>The app homepage works when deployed to an Automation node</td><td>Docs</td><td><span class="sev med">To confirm</span></td><td>W10</td></tr>
+        <tr data-area="confirm"><td class="id">A13</td><td>An Advanced Govern licence is required</td><td>Docs</td><td><span class="sev med">To confirm</span></td><td>W10</td></tr>
+        <tr data-area="confirm"><td class="id">A14</td><td>The "CDISC validation integrity" hook exists</td><td>Wiki</td><td><span class="sev med">To confirm</span></td><td>W1, W11</td></tr>
+        <tr data-area="confirm"><td class="id">A15</td><td>CDISC CORE runs offline from the shipped zip</td><td>Docs</td><td><span class="sev med">To confirm</span></td><td>W10</td></tr>
+        <tr data-area="wrong"><td class="id">A16</td><td>A personal admin account is fine as scenario run-as</td><td>Project</td><td><span class="sev high">Wrong</span></td><td>K22 → W13</td></tr>
+        <tr data-area="accept"><td class="id">A17</td><td>Presenters have Pinnacle 21 Community installed</td><td>Docs</td><td><span class="sev low">Accepted</span></td><td>Demo checklist</td></tr>
+        <tr data-area="confirm"><td class="id">A18</td><td>The vendor list in the tools map is representative</td><td>Docs</td><td><span class="sev med">To confirm</span></td><td>Clinical SME review (W16)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================ WORK ============================ -->
+<section id="work">
+  <h2>Suggested work</h2>
+  <p class="section-intro">Four phases. Phases 0–2 make the asset package-ready; phase 3 is optional polish. Effort: S ≈ half a day to a day, M ≈ 2–3 days. Estimates are rough.</p>
+
+  <div class="phases">
+    <div class="card phase p0">
+      <header><h3>Phase 0 · Unblock</h3><span class="effort">≈ 1 day · prerequisites</span></header>
+      <div class="table-wrap"><table>
+        <thead><tr><th>#</th><th>Work</th><th>Closes</th><th>Effort</th></tr></thead>
+        <tbody>
+          <tr><td class="id">W1</td><td>Get a Govern <strong>admin</strong> API key; read the blueprint version, sign-off configs, roles and hooks</td><td>K23, A14</td><td>S</td></tr>
+          <tr><td class="id">W2</td><td>Re-baseline the scoping document and deck: move roadmap items out; reword "Part 11 e-signatures", "100% GxP", "60%"</td><td>K24</td><td>S</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="card phase">
+      <header><h3>Phase 1 · Make every claim true</h3><span class="effort">≈ 1 week</span></header>
+      <div class="table-wrap"><table>
+        <thead><tr><th>#</th><th>Work</th><th>Closes</th><th>Effort</th></tr></thead>
+        <tbody>
+          <tr><td class="id">W3</td><td>SDTM gate: classify findings by real impact (e.g. a list of blocking rule IDs); add a "fails on purpose" demo variant</td><td>K1, A3</td><td>S–M</td></tr>
+          <tr><td class="id">W4</td><td>Build the Pinnacle 21 zip inside the flow from the current XPT files</td><td>K2</td><td>S</td></tr>
+          <tr><td class="id">W5</td><td>Require an explicit ADaM result and an attached P21 report before release; remove the auto-fill</td><td>K3, A4</td><td>S</td></tr>
+          <tr><td class="id">W6</td><td>Approvals: remove API keys; reviewer and approver roles with two demo users; require a comment</td><td>K5, K6, K18</td><td>S</td></tr>
+          <tr><td class="id">W7</td><td>Hide the debug reset; delete deprecated scenarios; activate or remove the integrity sweep; stop on build failure</td><td>K7–K10</td><td>S</td></tr>
+          <tr><td class="id">W8</td><td>Align TLF numbers and titles to the SAP; fix or detach the reviewer guides; correct the change note</td><td>K13–K15</td><td>S</td></tr>
+          <tr><td class="id">W9</td><td>Pin R package versions (dated CRAN snapshot)</td><td>K11</td><td>S</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="card phase p2">
+      <header><h3>Phase 2 · Make it portable</h3><span class="effort">≈ 1 week</span></header>
+      <div class="table-wrap"><table>
+        <thead><tr><th>#</th><th>Work</th><th>Closes</th><th>Effort</th></tr></thead>
+        <tbody>
+          <tr><td class="id">W10</td><td>Confirm with Dataiku: Automation-node app behaviour, Advanced Govern licensing, CORE offline operation</td><td>A12, A13, A15</td><td>S</td></tr>
+          <tr><td class="id">W11</td><td>Move the workflow into a dedicated blueprint with roles; export and test the import</td><td>K17, K18, A14</td><td>M</td></tr>
+          <tr><td class="id">W12</td><td>One Govern record per instance (created at setup) and homepage links built from the project variable</td><td>K4, A8</td><td>M</td></tr>
+          <tr><td class="id">W13</td><td>Dedicated service account as scenario run-as</td><td>K22, A16</td><td>S</td></tr>
+          <tr><td class="id">W14</td><td>Set Git commit mode to explicit (or drop the claim)</td><td>K19</td><td>S</td></tr>
+          <tr><td class="id">W15</td><td>Bundle hygiene: remove the static zip and test residue; archive old test instances; run the <code>docs/03</code> checklist on a fresh instance</td><td>K8, K2</td><td>S–M</td></tr>
+          <tr><td class="id">W16</td><td>Update wiki and <code>docs/00–05</code>; clinical SME review of the primer and tools map</td><td>K16, K20, A18</td><td>S</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="card phase p3">
+      <header><h3>Phase 3 · Optional polish</h3><span class="effort">≈ 1–2 weeks</span></header>
+      <div class="table-wrap"><table>
+        <thead><tr><th>#</th><th>Work</th><th>Closes</th><th>Effort</th></tr></thead>
+        <tbody>
+          <tr><td class="id">W17</td><td>Drive XPT labels and lengths from a specification CSV (groundwork for Define-XML)</td><td>K12</td><td>M</td></tr>
+          <tr><td class="id">W18</td><td>Add SAP tables 14.3.2 (GMFR) and 14.3.3 (seroconversion/seroprotection)</td><td>K13</td><td>S–M</td></tr>
+          <tr><td class="id">W19</td><td>One independent-QC comparison (e.g. R ADSL vs. visual ADSL with a difference report)</td><td>K20</td><td>M</td></tr>
+          <tr><td class="id">W20</td><td>Export flow documentation for one ADaM dataset as a sample "reviewer program"</td><td>—</td><td>S</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ READY ============================ -->
+<section id="ready">
+  <h2>Package-ready criteria</h2>
+  <div class="grid two">
+    <div class="card">
+      <h3 style="margin-top:0">Readiness today</h3>
+      <table class="score">
+        <tbody>
+          <tr><td>Runs end to end in a fresh instance</td><td><span class="rag a">Amber</span> · works, but shares <code>ar.114</code> and a stale zip</td></tr>
+          <tr><td>Every claim is true</td><td><span class="rag r">Red</span> · K1, K3, K24</td></tr>
+          <tr><td>Scope agreed</td><td><span class="rag g">Green</span> · re-baselined 2026-11-05</td></tr>
+          <tr><td>Governance portable</td><td><span class="rag r">Red</span> · K4, K17, K18, K23</td></tr>
+          <tr><td>Reproducible build</td><td><span class="rag a">Amber</span> · Python pinned, R not</td></tr>
+          <tr><td>Documentation</td><td><span class="rag a">Amber</span> · drafted, needs updates and SME review</td></tr>
+          <tr><td>Demo story</td><td><span class="rag g">Green</span> · gated workflow with drift revocation</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Exit criteria (definition of done)</h3>
+      <ul class="check">
+        <li>A fresh instance runs end to end on its own Govern record with only the documented configuration steps</li>
+        <li>The SDTM gate can be shown failing, and a drift change revokes approvals</li>
+        <li>Release requires an attached Pinnacle 21 report and an explicit result</li>
+        <li>Approvals come from two different people through roles, with comments</li>
+        <li>The Govern blueprint exports and imports with its roles and hook</li>
+        <li>Both code environments are fully pinned</li>
+        <li>No claim in the deck, scoping document or docs contradicts the evidence or Dataiku's Statement of Quality</li>
+        <li>Docs 00–04 reviewed by a clinical SME; internal backlog (05) kept separate</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Evidence: Dataiku Design project <code>CLIN_FLU2026_VISUAL</code> and app instances, Govern record <code>ar.114</code> (non-admin API key), project wiki, Dataiku <em>Statement of Quality</em> (July 2026), and the original scoping document. Reviewed 2026-11-05. Companion documents: <code>docs/00</code>–<code>05</code> in this repository.
+</footer>
+
+</main>
+<script>
+(function () {
+  document.querySelectorAll('.chips').forEach(function (group) {
+    var table = document.getElementById(group.getAttribute('data-target'));
+    if (!table) return;
+    var rows = Array.prototype.slice.call(table.querySelectorAll('tbody tr'));
+    var buttons = Array.prototype.slice.call(group.querySelectorAll('.chip'));
+    buttons.forEach(function (btn) {
+      var f = btn.getAttribute('data-filter');
+      var n = f === 'all' ? rows.length : rows.filter(function (r) { return r.getAttribute('data-area') === f; }).length;
+      var c = btn.querySelector('.count');
+      if (c) { c.textContent = n; } else { var s = document.createElement('span'); s.className = 'count'; s.textContent = n; btn.appendChild(s); }
+      btn.addEventListener('click', function () {
+        buttons.forEach(function (b) { b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'); });
+        rows.forEach(function (r) { r.hidden = !(f === 'all' || r.getAttribute('data-area') === f); });
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
