@@ -38,7 +38,10 @@ No software is "GxP compliant" on its own. Compliance comes from a validated sys
 ## 3. Limitations of the MVP
 
 ### Scope
+The MVP covers a **governed SDTM → ADaM → TLF/XPT pipeline**. Items outside that are on the roadmap (§4).
 - **SDTM is the input.** No raw → SDTM mapping, no EDC/API ingestion. The data is synthetic (50 subjects, single arm).
+- **Two approval gates** (SDTM, ADaM). A raw → SDTM gate would come with raw → SDTM mapping.
+- **No metadata-driven standards library, medical review dashboards or QMS integration.**
 - **No Define-XML** and no final reviewer's guides. The attached ADRG, SDRG and SAP are illustrative drafts that don't fully match the pipeline.
 - **TLFs are partial:** 4 summary tables as text and CSV. No listings, figures or RTF output, and numbering not yet aligned to the SAP.
 - **No independent double-programming path.** QC is limited to 26 in-flow consistency checks plus conformance validation.
@@ -76,11 +79,15 @@ These are prioritised by the customer's answers in discovery (see [demo script �
 
 | Item | Depends on |
 |---|---|
+| Raw → SDTM mapping (`sdtm.oak` or visual) with a raw → SDTM approval gate | Customer SDTM process |
+| EDC/API ingestion | Customer EDC |
+| Metadata-driven standards library | Customer MDR / specification format |
 | Specification-driven XPT metadata → **Define-XML 2.1** | Customer MDR / specification format |
 | Full TLF suite to the customer's shells (RTF, listings, figures) | Customer templates |
-| Independent QC path with automatic comparison | Customer QC policy |
-| Raw → SDTM mapping (`sdtm.oak` or visual), EDC ingestion | Customer EDC |
+| Independent visual-vs-code QC path with automatic comparison | Customer QC policy |
+| Medical review dashboards | Customer medical review process |
 | Part 11 e-signature integration via the Govern REST API | Customer e-signature system |
+| QMS integration of Govern audit metadata | Customer QMS |
 | Pinnacle 21 Enterprise integration | Customer licence |
-| Multi-study operation, shared standards library | Portfolio size |
+| Multi-study operation, standard domain recipes | Portfolio size |
 | Installer, IQ/OQ test pack | Committed pilot |

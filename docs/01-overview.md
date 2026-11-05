@@ -1,6 +1,7 @@
 # FLU2026 CDISC Submission Pipeline — Overview
 
-> **Status:** MVP / conversation starter — *draft documentation, reflects the project state as of 2026-10-21.*
+> **Status:** MVP / conversation starter — *draft documentation, reflects the project state as of 2026-11-05.*
+> **Scope:** baselined on 2026-11-05 — see [06 · Scope baseline](06-scope-baseline.md).
 > **Dataiku project:** `CLIN_FLU2026_VISUAL` (app template "FLU2026 — CDISC Submission Validation")
 > **Data:** synthetic Phase II flu-vaccine study, 50 subjects. **Not for submission or clinical use.**
 > New to CDISC? Read the [CDISC & submission primer](00-cdisc-submission-primer.md) first.
@@ -44,6 +45,8 @@ flowchart LR
 ```
 
 Relative to the end-to-end CRF-to-CSR process (deck slide 5), the asset covers **SDTM validation through ADaM, TLFs and the XPT package**. SDTM is the *input*: the asset validates and locks it but doesn't create it.
+
+The original scoping document also included raw → SDTM mapping, a metadata-driven standards library, Define-XML, a parallel code-validation path, medical review dashboards and QMS integration. On 2026-11-05 the scope was **re-baselined** to what the project delivers; those items are now roadmap. The [scope baseline](06-scope-baseline.md) records every change and what can and can't be claimed.
 
 ---
 
@@ -115,20 +118,24 @@ Govern and the Design node are separate systems, so a Govern approval can't stop
 
 ---
 
-## Real today vs. roadmap
+## Baseline vs. roadmap
 
-| Capability | Status |
+| Capability | Baseline status |
 |---|---|
-| Visual-first ADaM derivation with open-source CDISC tooling | ✅ Working |
-| Gated workflow with Govern sign-offs and automatic revocation on drift | ✅ Working (see [known issues](05-mvp-backlog-internal.md)) |
-| SDTM conformance (CDISC CORE) | ✅ Working (gate logic needs fixing) |
-| XPT v5 export | ✅ Working (labels not yet spec-driven) |
-| ADaM conformance (Pinnacle 21) | ⚠️ Manual, outside Dataiku |
-| TLFs | ⚠️ 4 summary tables; no listings or figures, no RTF |
+| Visual-first ADaM derivation with open-source CDISC tooling | ✅ In scope, working |
+| 2 Govern approval gates (SDTM, ADaM) with automatic revocation on drift | ✅ In scope, working (see [known issues](05-mvp-backlog-internal.md)) |
+| SDTM lock & conformance (CDISC CORE) | ✅ In scope (gate logic needs fixing) |
+| XPT v5 export | ✅ In scope (labels not yet spec-driven) |
+| ADaM conformance (Pinnacle 21) | ✅ In scope as a manual step, recorded in Govern |
+| TLFs | ⚠️ In scope, reduced: 4 summary tables; listings, figures and RTF on the roadmap |
+| Raw → SDTM mapping and the raw→SDTM gate | ❌ Roadmap |
+| EDC/API ingestion | ❌ Roadmap |
+| Metadata-driven standards library | ❌ Roadmap |
 | Define-XML | ❌ Roadmap |
-| Independent double-programming comparison | ❌ Roadmap |
-| Raw → SDTM mapping, EDC/API ingestion | ❌ Roadmap |
-| Part 11 electronic signatures | ❌ Customer's e-signature system, linked through the Govern API |
+| Independent visual-vs-code validation path | ❌ Roadmap |
+| Medical review dashboards | ❌ Roadmap |
+| QMS integration | ❌ Roadmap |
+| Part 11 electronic signatures | ❌ Customer's e-signature system, linked through the Govern API (roadmap) |
 | On-premise install package, IQ/OQ/PQ kit | ❌ For a committed pilot |
 
 ---
@@ -143,3 +150,5 @@ Govern and the Design node are separate systems, so a Govern approval can't stop
 | [03 · Architecture & prerequisites](03-architecture-and-prerequisites.md) | Target deployment, licences, installation checklist |
 | [04 · Responsibilities & limitations](04-responsibilities-and-limitations.md) | Part 11 shared responsibility, honest limitations |
 | [05 · MVP backlog (internal)](05-mvp-backlog-internal.md) | Known issues and the prioritised fix list — **do not share externally** |
+| [06 · Scope baseline](06-scope-baseline.md) | The agreed scope, change register vs. the original scoping document, messaging guardrails — **internal** |
+| [Readiness map](readiness-map.html) | One-page HTML view: architecture, gaps, assumptions, phased work plan — **internal** |

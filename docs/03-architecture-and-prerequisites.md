@@ -2,6 +2,7 @@
 
 > **Audience:** solution architects, customer IT / platform teams, validation leads.
 > **Deployment target:** **self-managed (on-premise or customer cloud tenant) Dataiku.** The asset is developed on Dataiku Cloud for convenience only.
+> **Scope:** the baseline in [06 · Scope baseline](06-scope-baseline.md). The customer SDTM source and e-signature system appear in the target diagram as integration points only; EDC ingestion and QMS integration are roadmap.
 
 ---
 

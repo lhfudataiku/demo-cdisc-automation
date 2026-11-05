@@ -24,6 +24,11 @@
 > - SDTM conformance always shows **PASS**, even with 6,047 findings. Don't claim the gate "found no issues": say the findings are reviewed by a person before sign-off.
 > - If ADaM conformance is left blank in Govern, the release gate fills in PASS from the in-flow QC. **Always set the P21 result explicitly** on the Govern record before releasing.
 
+> 🧭 **Scope guardrails** (full list in [06 · Scope baseline §4](06-scope-baseline.md#4-messaging-guardrails))
+> - Present the asset as a **governed SDTM → ADaM → TLF/XPT pipeline**, not "CRF to CSR".
+> - Raw → SDTM mapping, EDC ingestion, a standards library, Define-XML, a code-validation path, dashboards and QMS integration are **roadmap**: raise them as discovery questions, never as features.
+> - Govern sign-offs are **approval gates**, not Part 11 e-signatures. Don't say "100% GxP compliant" or quote "60%".
+
 ---
 
 ## 2. Storyline
@@ -87,7 +92,7 @@ Pick **one** of these:
    > "The final outputs can only be released once both approvals exist for exactly this data and code."
 
 ### Step 7 · Close (no clicks)
-> "This is an MVP that shows the pattern. Define-XML, your TLF templates, your EDC and your e-signature system are where we'd adapt it to you. Which brings us to some questions."
+> "This is an MVP that shows the pattern from SDTM onwards. SDTM creation, Define-XML, your TLF templates, your EDC, your e-signature system and your QMS are where we'd adapt it to you. Which brings us to some questions."
 
 ---
 
